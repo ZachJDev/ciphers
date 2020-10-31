@@ -76,9 +76,9 @@ class ZigZagCipher {
         // This conditional (and it's sibling at the end) also makes it feel hacky to me.
       if(final.length < s.length) final += s[offset];
 
-      if (rowsLeft === 1) return;
-
       switch (rowsLeft) {
+        case 1:  // Base case for recursion.
+          return
         case numRows:
           recursiveZag(offset + numInTopRow + i, rowsLeft - 1, i);
           break;
