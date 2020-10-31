@@ -20,6 +20,9 @@ class ZigZagCipher {
     // That is handled correctly below, so it's not explicated here.
     let final = "";
 
+    // This method builds final row-by-row, in order of 
+    // the letter appearing in the final string, not by
+    // manipulating the insertion index.
     let cycleUp = numRows * 2 - 2;
     let cycleDown = 0;
 
@@ -53,13 +56,13 @@ class ZigZagCipher {
             if(final.length < s.length)final += s[Math.ceil(s.length / 2) + i]
           }
       }
-    let cycle = numRows * 2 - 2;
-    let numFullCycles = Math.floor(s.length / cycle);
-    let numInTopRow = Math.ceil(s.length / cycle);
-    let cycleRemainder = s.length % (numRows * 2 - 2);
+    let cycleLen = numRows * 2 - 2;
+    let numFullCycles = Math.floor(s.length / cycleLen);
+    let numInTopRow = Math.ceil(s.length / cycleLen);
+    let cycleRemainder = s.length % (numRows * 2 - 2); // total number of letters in the final cycle.
 
-    const getLeftInRow = (rowNum) => {
-        if(cycleRemainder > cycle - rowNum) return 2
+    const getCycleRemainderInRow = (rowNum) => {
+        if(cycleRemainder > cycleLen - rowNum) return 2
         if(cycleRemainder > rowNum) return 1
         return 0
     };
@@ -68,7 +71,8 @@ class ZigZagCipher {
     // cycle.
     const recursiveZag = (offset, rowsLeft, i) => {
       let rowNum = numRows-rowsLeft;
-      let numInRow = (numFullCycles * 2) + getLeftInRow(rowNum);
+      // Each cycle has two letters in one row, up and down.
+      let numInRow = (numFullCycles * 2) + getCycleRemainderInRow(rowNum);
         // This conditional (and it's sibling at the end) also makes it feel hacky to me.
       if(final.length < s.length) final += s[offset];
 
@@ -78,14 +82,16 @@ class ZigZagCipher {
         case numRows:
           recursiveZag(offset + numInTopRow + i, rowsLeft - 1, i);
           break;
-        case 2:
+        case 2: //2nd to last row; next row has 1/2 as many
           recursiveZag(offset + numInRow - i, rowsLeft - 1, i);
           break;
         default:
           recursiveZag(offset + numInRow, rowsLeft - 1, i);
           break;
       }
-
+      // The top row does not add it's neighbor as the next call in the for loop will start
+      // with that letter. And obviously we don't want to add something once we're finished
+      // with the final string.
       if (rowsLeft !== numRows && final.length < s.length) final += s[offset + 1];
     };
     for (let i = 0; i < numInTopRow; i++) {
@@ -98,14 +104,13 @@ class ZigZagCipher {
 
 
 ////////// A few Tests ////////////
-let message = "DISCOVEREDDONOTADVANCE"
-const MAX_ROWS = 15
+let message = "DISCOVEREDDONOTADVANCE".repeat(100)
+const MAX_ROWS = 300
 let randomRowCipher = new ZigZagCipher(Math.floor(Math.random() * MAX_ROWS) + 1)
 let cipher = randomRowCipher.encipher(message);
 
 for(let i = 1; i < MAX_ROWS; i++) {
     let decoded = ZigZagCipher.quickDecipher(cipher, i)
-    console.log(i + ' ' +  message + '\n' + i + ' ' + decoded)
     if(decoded === message){
          console.log("Code Deciphered: " + i + " Rows.")
         break;
