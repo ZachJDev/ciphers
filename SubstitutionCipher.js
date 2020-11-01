@@ -1,3 +1,5 @@
+const Message = require('./Message')
+
 class SubstitutionCipher {
   constructor(key) {
     try {
@@ -39,15 +41,15 @@ class SubstitutionCipher {
     if (charCode < 91) return charCode - 65;
     return this._getAlphaIndex(charCode - 32);
   }
-  encipher(string) {
+  encipher(message) {
     // Returns an encoded string.
-    let splitString = string.split("");
+    let splitString = message.text.split("");
     for (let i = 0; i < splitString.length; i++) {
       let char = splitString[i];
       let alphaCheck = char.toUpperCase().charCodeAt(0);
       // if it is an alpha character
       if (alphaCheck >= 65 && alphaCheck <= 90) {
-        let alphaIndex = this._getAlphaIndex(char.charCodeAt(0));
+        let alphaIndex = message._getAlphaIndex(char.charCodeAt(0));
         let cipherLetter = this._key[alphaIndex].valueOf();
         //Convert if different cases:
         if (char.charCodeAt(0) >= 97 && cipherLetter.charCodeAt(0) <= 90) {
@@ -66,9 +68,9 @@ class SubstitutionCipher {
     return splitString.join("");
   }
 
-  decipher(string) {
+  decipher(message) {
     // returns a decoded string.
-    let splitString = string.split("");
+    let splitString = message.text.split("");
     for (let i = 0; i < splitString.length; i++) {
         let char = splitString[i];
       let alphaCheck = char.toUpperCase().charCodeAt(0);
@@ -87,4 +89,9 @@ class SubstitutionCipher {
   }
 }
 
+let sub = new SubstitutionCipher("MNBVCLXZKAJSHDGFPQOWIEURYT")
+let message = new Message("DONT GO NEAR THERE")
 
+let encoded = new Message(sub.encipher(message))
+console.log(encoded.text)
+console.log(sub.decipher(encoded))

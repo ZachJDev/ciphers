@@ -1,6 +1,6 @@
-class Message {
+module.exports = class Message {
   constructor(m) {
-    this.message = m;
+    this.text = m;
   }
   _isAlpha(c) {
     let check = c.toUpperCase().charCodeAt(0);

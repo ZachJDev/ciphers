@@ -1,3 +1,4 @@
+let Message = require('./Message')
 class CaesarCipher {
   constructor(rotation) {
     try {
@@ -11,6 +12,7 @@ class CaesarCipher {
         );
       // simplify
       this._rot = rotation % 26;
+      // store the original, just because
       this.rotation = rotation;
     } catch (e) {
       console.log(e);
@@ -26,11 +28,11 @@ class CaesarCipher {
     return this._getAlphaIndex(charCode - 32);
   }
   _getCharCodeFromAlpha;
-  encipher(string) {
+  encipher(message) {
     let final = "";
-    for (let char of string) {
+    for (let char of message.text) {
       let newChar = char;
-      if (this._isAlpha(char)) {
+      if (message._isAlpha(char)) {
         let charCode = char.charCodeAt(0);
         let newCode = charCode + (this._rot % 26);
         // This converts rotations that go too high for charCode:
@@ -51,4 +53,4 @@ class CaesarCipher {
 }
 
 let rot13 = new CaesarCipher(13);
-console.log(rot13.encipher("AND YES I am hungry, thank you!"));
+console.log(rot13.encipher(new Message("AND YES I am hungry, thank you!")));
